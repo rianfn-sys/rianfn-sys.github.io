@@ -2,38 +2,77 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Link Card Bootstrap</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <title>Contoh Card</title>
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    
+    <style>
+        .card {
+            transition: transform 0.3s;
+            height: 100%;
+        }
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+        }
+        .icon-box {
+            font-size: 50px;
+            color: #0d6efd;
+            padding: 20px 0;
+            text-align: center;
+        }
+    </style>
 </head>
-<body>
+<body class="bg-light p-5">
 
-<div class="container mt-5">
-    <div class="row">
+<div class="container">
+    <h2 class="text-center mb-5">Navigasi Link Favorit</h2>
+    
+    <div class="row g-4">
         
         <div class="col-md-4">
-            <div class="card h-100">
-                <img src="https://via.placeholder.com/300x150" class="card-img-top" alt="Gambar">
+            <div class="card">
+                <img src="https://via.placeholder.com/300x150" class="card-img-top" alt="Thumbnail">
                 <div class="card-body">
-                    <h5 class="card-title">Google</h5>
-                    <p class="card-text">Klik di bawah untuk menuju ke Google.</p>
-                    <a href="https://www.google.com" target="_blank" class="btn btn-primary">Buka Website</a>
+                    <h5 class="card-title">Kunjungi Google</h5>
+                    <p class="card-content text-muted">Cari informasi apa saja dengan mesin pencari terbesar di dunia.</p>
+                    <a href="https://google.com" target="_blank" class="btn btn-primary w-100">Buka Situs</a>
                 </div>
             </div>
         </div>
 
         <div class="col-md-4">
-            <div class="card h-100">
-                <div class="card-body text-center">
-                    <h1 class="display-1">🌐</h1>
-                    <h5 class="card-title">Website Lain</h5>
-                    <p class="card-text">Card ini menggunakan ikon sebagai ganti gambar.</p>
-                    <a href="https://www.wikipedia.org" target="_blank" class="btn btn-success">Kunjungi</a>
+            <div class="card text-center">
+                <div class="icon-box">
+                    <span class="material-icons">code</span>
+                </div>
+                <div class="card-body">
+                    <h5 class="card-title">GitHub</h5>
+                    <p class="card-text text-muted">Simpan project coding kamu di platform kolaborasi terbaik.</p>
+                    <a href="https://github.com" target="_blank" class="btn btn-dark w-100">Lihat Profil</a>
                 </div>
             </div>
+        </div>
+
+        <div class="col-md-4">
+            <a href="https://getbootstrap.com" target="_blank" class="text-decoration-none text-dark">
+                <div class="card h-100">
+                    <div class="icon-box">
+                        <span class="material-icons">bolt</span>
+                    </div>
+                    <div class="card-body text-center">
+                        <h5 class="card-title">Bootstrap Docs</h5>
+                        <p class="card-text text-muted">Pelajari cara membuat website responsif dengan cepat.</p>
+                        <span class="badge bg-info text-dark">Official Site</span>
+                    </div>
+                </div>
+            </a>
         </div>
 
     </div>
 </div>
 
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

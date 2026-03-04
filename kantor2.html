@@ -45,7 +45,18 @@
 
   <div class="main-content">
     <div class="container py-5">
-      <h1 class="text-center mb-5 fw-bold text-uppercase" style="letter-spacing: 2px;">Link Keperluan Kantor</h1>
+      <h1 class="text-center mb-5 fw-bold text-uppercase" style="letter-spacing: 2px;">Portal Pegawai Puskesmas Girimulyo II</h1>
+
+      <div class="row justify-content-center mb-5">
+  <div class="col-md-6">
+    <div class="input-group">
+      <span class="input-group-text bg-dark border-secondary text-white">
+        <i class="fa-solid fa-magnifying-glass"></i>
+      </span>
+      <input type="text" id="searchInput" class="form-control bg-dark text-white border-secondary" placeholder="Cari layanan (misal: E-TPP, Kinerja...)" shadow-none>
+    </div>
+  </div>
+</div>
       
       <div class="row row-cols-1 row-cols-md-2 row-cols-lg-4 g-4">
         <div class="col">
@@ -134,5 +145,23 @@
   </footer>
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+  document.getElementById('searchInput').addEventListener('keyup', function() {
+    let filter = this.value.toLowerCase();
+    let cards = document.querySelectorAll('.col'); // Mengambil semua kolom kartu
+
+    cards.forEach(card => {
+      // Kita ambil teks dari judul kartu (h3)
+      let title = card.querySelector('.card-title').innerText.toLowerCase();
+      let desc = card.querySelector('.card-text').innerText.toLowerCase();
+      
+      if (title.includes(filter) || desc.includes(filter)) {
+        card.style.display = ""; // Tampilkan jika cocok
+      } else {
+        card.style.display = "none"; // Sembunyikan jika tidak cocok
+      }
+    });
+  });
+</script>
 </body>
 </html>

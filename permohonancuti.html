@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Formulir Pendaftaran Elegan</title>
+    <title>Formulir Permohonan Cuti Pegawai Puskesmas Girimulyo II</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
     <style>
@@ -51,34 +51,73 @@
 
 <div class="card-form">
     <div class="text-center mb-4">
-        <h3 class="text-primary fw-bold">Formulir Data</h3>
+        <h3 class="text-primary fw-bold">Formulir Permohonan Cuti Pegawai Puskesmas Girimulyo II</h3>
         <p class="text-muted small">Silakan lengkapi data Anda di bawah ini</p>
     </div>
 
     <form id="registrationForm">
+        <div class="mb-3">
+            <label class="form-label">Tanggal Permohonan</label>
+            <input type="datetime-local" class="form-control" placeholder="Masukkan tanggal hari ini" required>
+        </div>
+        
         <div class="mb-3">
             <label class="form-label">Nama Lengkap</label>
             <input type="text" class="form-control" placeholder="Masukkan nama sesuai KTP" required>
         </div>
 
         <div class="mb-3">
-            <label class="form-label">Alamat Email</label>
-            <input type="email" class="form-control" placeholder="contoh@mail.com" required>
+            <label class="form-label">NIP</label>
+            <input type="text" class="form-control" placeholder="Masukkan NIP anda" required>
         </div>
 
         <div class="mb-3">
-            <label class="form-label">Opsi Pilihan</label>
+            <label class="form-label">Jabatan</label>
+            <input type="text" class="form-control" placeholder="Masukkan jabaran anda" required>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Alamat</label>
+            <input type="text" class="form-control" placeholder="Masukkan alamat cuti Anda" required>
+        </div>
+        
+        <div class="mb-3">
+            <label class="form-label">Jenis Pengajuan Cuti</label>
             <select class="form-select">
                 <option selected disabled>Pilih opsi Anda...</option>
-                <option value="1">Opsi 1</option>
-                <option value="2">Opsi 2</option>
-                <option value="3">Opsi 3</option>
+                <option value="1">Cuti tahunan</option>
+                <option value="2">Cuti sakit</option>
+                <option value="3">Cuti bersalin</option>
+                <option value="4">Cuti sakit kurang 14 hari</option>
+                <option value="5">Cuti sakit lebih 14 hari</option>
+                <option value="6">Cuti alasan penting</option>
+                <option value="7">Cuti besar</option>
             </select>
         </div>
 
         <div class="mb-3">
-            <label class="form-label">Catatan/Pesan</label>
-            <textarea class="form-control" rows="3" placeholder="Tuliskan keterangan tambahan..."></textarea>
+            <label class="form-label">Tanggal Mulai</label>
+            <input type="datetime-local" class="form-control" placeholder="Masukkan tanggal mulai cuti" required>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Tanggal Selesai</label>
+            <input type="datetime-local" class="form-control" placeholder="Masukkan tanggal selesai cuti" required>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Yang Dilimpahi Tugas</label>
+            <input type="text" class="form-control" placeholder="Masukkan nama pegawai yang dilimpahi tugas" required>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Alasan Cuti</label>
+            <input type="text" class="form-control" placeholder="Masukkan alasan cuti Anda" required>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Alamat Email</label>
+            <input type="email" class="form-control" placeholder="contoh@mail.com" required>
         </div>
 
         <div id="loginError" class="mt-2 d-none fw-bold">

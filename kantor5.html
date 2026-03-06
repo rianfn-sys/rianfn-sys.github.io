@@ -371,8 +371,10 @@
 
     // --- FUNGSI LOGOUT ---
     function logout() {
-    window.location.replace("index.html");
-} // Segarkan halaman untuk kembali ke layar login
+    localStorage.removeItem("userToken"); // Contoh menghapus token
+    sessionStorage.clear(); // Menghapus semua data sesi sementara
+    window.location.href("index.html");
+}
     
     // --- NAVIGASI HALAMAN ---
     function showSection(id) {

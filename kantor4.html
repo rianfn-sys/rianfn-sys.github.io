@@ -55,6 +55,19 @@
 
     footer a:hover { color: #60a5fa !important; }
   </style>
+
+  <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.js"></script>
+<style>
+  /* Tambahan style agar kalender terlihat bagus di mode gelap */
+  #calendar {
+    background-color: white;
+    color: black;
+    padding: 15px;
+    border-radius: 10px;
+  }
+  .fc-event { cursor: pointer; }
+</style>
+  
 </head>
 <body>
 
@@ -195,13 +208,18 @@
       </section>
 
       <section id="jadwal" class="d-none">
-        <div class="container py-5">
-          <h2 class="text-center fw-bold mb-4">Live Calendar Jadwal</h2>
-          <div class="ratio ratio-16x9 shadow-lg rounded-3 overflow-hidden">
-            <iframe src="https://docs.google.com/spreadsheets/d/e/2PACX-1vS-link-kamu/pubhtml?widget=true&amp;headers=false"></iframe>
-          </div>
-        </div>
-      </section>
+  <div class="container py-5">
+    <h2 class="fw-bold mb-4 text-center">Jadwal Penggunaan Aula Kiskendo</h2>
+    <div class="bg-light p-3 rounded-4 shadow-lg">
+      <div id="calendar"></div>
+    </div>
+    <div class="text-center mt-4">
+      <a href="https://forms.gle/cu4FZQabcxY3wfmc7" target="_blank" class="btn btn-warning fw-bold">
+        <i class="fa-solid fa-calendar-plus me-2"></i>Booking Sekarang
+      </a>
+    </div>
+  </div>
+</section>
 
     </div>
 
@@ -271,6 +289,57 @@
         card.style.display = title.includes(filter) ? "" : "none";
       });
     });
+
+    document.addEventListener('DOMContentLoaded', function() {
+  const calendarEl = document.getElementById('calendar');
+  
+  // URL CSV dari "Publish to Web" Google Sheet Anda
+  const sheetCsvUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTjMxT71Z3ygN3LuMjeanePHUpbrro9sQpR7EZcoA-YXyYn9Qlej9DOkG4lKOid8p3lewYqOSX-Ur-5/pubhtml?gid=1151856171&single=true'; 
+
+  const calendar = new FullCalendar.Calendar(calendarEl, {
+    initialView: 'dayGridMonth',
+    locale: 'id',
+    headerToolbar: {
+      left: 'prev,next today',
+      center: 'title',
+      right: 'dayGridMonth,timeGridWeek'
+    },
+    events: function(info, successCallback, failureCallback) {
+      fetch(sheetCsvUrl)
+        .then(response => response.text())
+        .then(csvText => {
+          const rows = csvText.split('\n').slice(1); 
+          const events = rows.map(row => {
+            const cols = row.split(',');
+            // Mapping berdasarkan kolom di Google Sheet Anda
+            if (cols[7]) { // Kolom Tanggal
+              return {
+                title: cols[5], // Nama Kegiatan
+                start: cols[7].trim() + 'T' + cols[8].trim(), // Tanggal + Jam Mulai
+                description: cols[6] // Deskripsi
+              };
+            }
+          }).filter(e => e !== undefined);
+          successCallback(events);
+        })
+        .catch(err => console.error("Gagal memuat data:", err));
+    },
+    eventClick: function(info) {
+      alert('Kegiatan: ' + info.event.title + '\nKeterangan: ' + info.event.extendedProps.description);
+    }
+  });
+
+  // Render kalender saat section jadwal dibuka
+  const originalShowSection = window.showSection;
+  window.showSection = function(id) {
+    originalShowSection(id);
+    if (id === 'jadwal') {
+      setTimeout(() => { calendar.render(); }, 200);
+    }
+  };
+});
+    
   </script>
+  
 </body>
 </html>

@@ -14,38 +14,65 @@
     <div id="calendar"></div>
 
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const calendarEl = document.getElementById('calendar');
-            const sheetCsvUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTjMxT71Z3ygN3LuMjeanePHUpbrro9sQpR7EZcoA-YXyYn9Qlej9DOkG4lKOid8p3lewYqOSX-Ur-5/pub?output=csv';
-            const calendar = new FullCalendar.Calendar(calendarEl, {
-                initialView: 'dayGridMonth',
-                locale: 'id',
-                events: function(info, successCallback, failureCallback) {
-                    fetch(sheetCsvUrl)
-                        .then(response => response.text())
-                        .then(csvText => {
-                            const rows = csvText.split('\n').slice(1); // Lewati header
-                            const events = rows.map(row => {
-                                const cols = row.split(',');
-                                // Berdasarkan kolom di file kamu:
-                                // Index 5: Nama Kegiatan, Index 7: Tanggal, Index 8: Jam Mulai
-                                if (cols[7]) {
-                                    return {
-                                        title: cols[5], // Nama Kegiatan
-                                        start: cols[7] + 'T' + cols[8], // Tanggal + Jam Mulai
-                                        description: cols[6] // Deskripsi
-                                    };
+<script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.2/papaparse.min.js"></script>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const calendarEl = document.getElementById('calendar');
+        const sheetCsvUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTjMxT71Z3ygN3LuMjeanePHUpbrro9sQpR7EZcoA-YXyYn9Qlej9DOkG4lKOid8p3lewYqOSX-Ur-5/pub?output=csv';
+
+        const calendar = new FullCalendar.Calendar(calendarEl, {
+            initialView: 'dayGridMonth',
+            locale: 'id',
+            events: function(info, successCallback, failureCallback) {
+                Papa.parse(sheetCsvUrl, {
+                    download: true,
+                    header: false, // Kita gunakan indeks angka seperti kode awal Anda
+                    complete: function(results) {
+                        const rows = results.data.slice(1); // Lewati header
+                        const events = rows.map(cols => {
+                            // Pastikan kolom tanggal (indeks 7) tersedia
+                            if (cols[7] && cols[7].trim() !== "") {
+                                
+                                // Membersihkan format tanggal (Asumsi input: DD/MM/YYYY atau YYYY-MM-DD)
+                                let rawDate = cols[7].trim();
+                                let datePart = rawDate;
+                                
+                                // Konversi sederhana jika formatnya DD/MM/YYYY ke YYYY-MM-DD
+                                if (rawDate.includes('/')) {
+                                    const parts = rawDate.split('/');
+                                    if (parts[0].length <= 2) {
+                                        datePart = `${parts[2]}-${parts[1].padStart(2, '0')}-${parts[0].padStart(2, '0')}`;
+                                    }
                                 }
-                            }).filter(e => e !== undefined);
-                            successCallback(events);
-                        });
-                },
-                eventClick: function(info) {
-                    alert('Kegiatan: ' + info.event.title + '\nDeskripsi: ' + info.event.extendedProps.description);
-                }
-            });
-            calendar.render();
+
+                                const startTime = cols[8] ? cols[8].trim() : "00:00";
+
+                                return {
+                                    title: cols[5] || "Tanpa Judul",
+                                    start: `${datePart}T${startTime}`,
+                                    extendedProps: {
+                                        description: cols[6] || ""
+                                    }
+                                };
+                            }
+                        }).filter(e => e !== undefined);
+                        
+                        successCallback(events);
+                    },
+                    error: function(err) {
+                        console.error("Gagal mengambil data:", err);
+                        failureCallback(err);
+                    }
+                });
+            },
+            eventClick: function(info) {
+                alert('Kegiatan: ' + info.event.title + 
+                      '\nDeskripsi: ' + (info.event.extendedProps.description || '-'));
+            }
         });
-    </script>
+        calendar.render();
+    });
+</script>
 </body>
 </html>

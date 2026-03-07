@@ -15,91 +15,37 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-  const calendarEl = document.getElementById('calendar');
-  
-  // Ganti dengan URL CSV dari "Publish to Web" Anda
-  const sheetCsvUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTjMxT71Z3ygN3LuMjeanePHUpbrro9sQpR7EZcoA-YXyYn9Qlej9DOkG4lKOid8p3lewYqOSX-Ur-5/pub?output=csv'; 
-
-  // --- FUNGSI TAMBAHAN: MENGUBAH DD/MM/YYYY MENJADI YYYY-MM-DD ---
-  function formatDateToISO(dateStr) {
-    if (!dateStr) return null;
-    // Jika formatnya DD/MM/YYYY (seperti 20/05/2024)
-    if (dateStr.includes('/')) {
-      const parts = dateStr.split('/');
-      if (parts.length === 3) {
-        const day = parts[0].padStart(2, '0');
-        const month = parts[1].padStart(2, '0');
-        const year = parts[2];
-        return `${year}-${month}-${day}`;
-      }
-    }
-    // Jika formatnya sudah YYYY-MM-DD (seperti 2024-05-20)
-    return dateStr;
-  }
-
-  const calendar = new FullCalendar.Calendar(calendarEl, {
-    initialView: 'dayGridMonth',
-    locale: 'id',
-    themeSystem: 'bootstrap5',
-    headerToolbar: {
-      left: 'prev,next today',
-      center: 'title',
-      right: 'dayGridMonth,timeGridWeek'
-    },
-    events: function(info, successCallback, failureCallback) {
-      fetch(sheetCsvUrl)
-        .then(response => response.text())
-        .then(csvText => {
-          const rows = csvText.split('\n').map(row => row.split(','));
-          rows.shift(); // Hapus header baris pertama
-
-          const events = rows.map(cols => {
-            // Kolom 7: Tanggal Kegiatan, Kolom 8: Jam Mulai, Kolom 5: Nama Kegiatan
-            if (cols[7] && cols[7].trim() !== "") {
-              const rawDate = cols[7].trim();
-              const isoDate = formatDateToISO(rawDate);
-              const jam = cols[8] ? cols[8].trim() : "00:00";
-              
-              if (isoDate) {
-                return {
-                  title: cols[5], // Nama Kegiatan
-                  start: isoDate + 'T' + jam,
-                  extendedProps: { 
-                    description: cols[6] // Deskripsi
-                  },
-                  backgroundColor: '#ffc107', // Warna kuning biar kontras
-                  borderColor: '#ffc107',
-                  textColor: '#000'
-                };
-              }
-            }
-          }).filter(e => e !== undefined);
-          
-          successCallback(events);
-        })
-        .catch(err => {
-          console.error("Gagal memuat data:", err);
-          failureCallback(err);
+            const calendarEl = document.getElementById('calendar');
+            const sheetCsvUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTjMxT71Z3ygN3LuMjeanePHUpbrro9sQpR7EZcoA-YXyYn9Qlej9DOkG4lKOid8p3lewYqOSX-Ur-5/pub?output=csv';
+            const calendar = new FullCalendar.Calendar(calendarEl, {
+                initialView: 'dayGridMonth',
+                locale: 'id',
+                events: function(info, successCallback, failureCallback) {
+                    fetch(sheetCsvUrl)
+                        .then(response => response.text())
+                        .then(csvText => {
+                            const rows = csvText.split('\n').slice(1); // Lewati header
+                            const events = rows.map(row => {
+                                const cols = row.split(',');
+                                // Berdasarkan kolom di file kamu:
+                                // Index 5: Nama Kegiatan, Index 7: Tanggal, Index 8: Jam Mulai
+                                if (cols[7]) {
+                                    return {
+                                        title: cols[5], // Nama Kegiatan
+                                        start: cols[7] + 'T' + cols[8], // Tanggal + Jam Mulai
+                                        description: cols[6] // Deskripsi
+                                    };
+                                }
+                            }).filter(e => e !== undefined);
+                            successCallback(events);
+                        });
+                },
+                eventClick: function(info) {
+                    alert('Kegiatan: ' + info.event.title + '\nDeskripsi: ' + info.event.extendedProps.description);
+                }
+            });
+            calendar.render();
         });
-    },
-    eventClick: function(info) {
-      alert('📌 Kegiatan: ' + info.event.title + '\n📝 Keterangan: ' + info.event.extendedProps.description);
-    }
-  });
-
-  // Integrasi dengan fungsi navigasi navbar Anda
-  const originalShowSection = window.showSection;
-  window.showSection = function(id) {
-    originalShowSection(id);
-    if (id === 'jadwal') {
-      // Tunggu sebentar sampai CSS transisi selesai agar kalender muncul penuh
-      setTimeout(() => { 
-        calendar.render(); 
-        calendar.updateSize(); 
-      }, 300);
-    }
-  };
-});
     </script>
 </body>
 </html>

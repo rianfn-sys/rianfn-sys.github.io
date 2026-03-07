@@ -476,7 +476,7 @@ document.addEventListener('DOMContentLoaded', function() {
       fetch(sheetCsvUrl)
         .then(response => response.text())
         .then(csvText => {
-          const rows = csvText.split('\n').map(row => row.split(','));
+          const rows = csvText.split('\n').map(row => row.split(';'));
           rows.shift(); // Hapus header baris pertama
 
           const events = rows.map(cols => {

@@ -2,77 +2,93 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Kalender Booking Aula Kiskendo</title>
+    
     <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.2/papaparse.min.js"></script>
+
     <style>
-        body { font-family: Arial, sans-serif; padding: 20px; }
-        #calendar { max-width: 900px; margin: 0 auto; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; padding: 20px; background-color: #f8f9fa; }
+        h2 { color: #333; margin-bottom: 20px; }
+        #calendar { 
+            max-width: 1000px; 
+            margin: 0 auto; 
+            background: white; 
+            padding: 15px; 
+            border-radius: 8px; 
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            min-height: 500px; /* Memastikan ada ruang visual */
+        }
     </style>
 </head>
 <body>
+
     <h2 style="text-align: center;">Jadwal Penggunaan Aula Kiskendo</h2>
     <div id="calendar"></div>
 
     <script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.2/papaparse.min.js"></script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const calendarEl = document.getElementById('calendar');
+            const sheetCsvUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTjMxT71Z3ygN3LuMjeanePHUpbrro9sQpR7EZcoA-YXyYn9Qlej9DOkG4lKOid8p3lewYqOSX-Ur-5/pub?output=csv';
 
-<script>
-    document.addEventListener('DOMContentLoaded', function() {
-        const calendarEl = document.getElementById('calendar');
-        const sheetCsvUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTjMxT71Z3ygN3LuMjeanePHUpbrro9sQpR7EZcoA-YXyYn9Qlej9DOkG4lKOid8p3lewYqOSX-Ur-5/pub?output=csv';
-
-        const calendar = new FullCalendar.Calendar(calendarEl, {
-            initialView: 'dayGridMonth',
-            locale: 'id',
-            events: function(info, successCallback, failureCallback) {
-                Papa.parse(sheetCsvUrl, {
-                    download: true,
-                    header: false, // Kita gunakan indeks angka seperti kode awal Anda
-                    complete: function(results) {
-                        const rows = results.data.slice(1); // Lewati header
-                        const events = rows.map(cols => {
-                            // Pastikan kolom tanggal (indeks 7) tersedia
-                            if (cols[7] && cols[7].trim() !== "") {
-                                
-                                // Membersihkan format tanggal (Asumsi input: DD/MM/YYYY atau YYYY-MM-DD)
-                                let rawDate = cols[7].trim();
-                                let datePart = rawDate;
-                                
-                                // Konversi sederhana jika formatnya DD/MM/YYYY ke YYYY-MM-DD
-                                if (rawDate.includes('/')) {
-                                    const parts = rawDate.split('/');
-                                    if (parts[0].length <= 2) {
-                                        datePart = `${parts[2]}-${parts[1].padStart(2, '0')}-${parts[0].padStart(2, '0')}`;
+            const calendar = new FullCalendar.Calendar(calendarEl, {
+                initialView: 'dayGridMonth',
+                locale: 'id',
+                headerToolbar: {
+                    left: 'prev,next today',
+                    center: 'title',
+                    right: 'dayGridMonth,timeGridWeek'
+                },
+                events: function(info, successCallback, failureCallback) {
+                    Papa.parse(sheetCsvUrl, {
+                        download: true,
+                        header: false,
+                        skipEmptyLines: true,
+                        complete: function(results) {
+                            const rows = results.data.slice(1); 
+                            const events = rows.map((cols, index) => {
+                                // Validasi kolom minimal (Index 5: Judul, Index 7: Tanggal)
+                                if (cols[7] && cols[7].trim() !== "") {
+                                    let datePart = cols[7].trim();
+                                    
+                                    // Normalisasi format DD/MM/YYYY ke YYYY-MM-DD
+                                    if (datePart.includes('/')) {
+                                        const p = datePart.split('/');
+                                        if (p[0].length <= 2) { 
+                                            datePart = `${p[2]}-${p[1].padStart(2, '0')}-${p[0].padStart(2, '0')}`;
+                                        }
                                     }
+
+                                    const startTime = (cols[8] && cols[8].trim() !== "") ? cols[8].trim() : "00:00:00";
+
+                                    return {
+                                        title: cols[5] || "Kegiatan Tanpa Nama",
+                                        start: `${datePart}T${startTime}`,
+                                        extendedProps: {
+                                            description: cols[6] || "Tidak ada deskripsi"
+                                        }
+                                    };
                                 }
+                            }).filter(e => e !== undefined);
+                            
+                            console.log("Data berhasil dimuat:", events); // Cek di F12 Console
+                            successCallback(events);
+                        },
+                        error: function(err) {
+                            console.error("Gagal parsing CSV:", err);
+                            failureCallback(err);
+                        }
+                    });
+                },
+                eventClick: function(info) {
+                    alert('Kegiatan: ' + info.event.title + 
+                          '\n\nDeskripsi: ' + info.event.extendedProps.description);
+                }
+            });
 
-                                const startTime = cols[8] ? cols[8].trim() : "00:00";
-
-                                return {
-                                    title: cols[5] || "Tanpa Judul",
-                                    start: `${datePart}T${startTime}`,
-                                    extendedProps: {
-                                        description: cols[6] || ""
-                                    }
-                                };
-                            }
-                        }).filter(e => e !== undefined);
-                        
-                        successCallback(events);
-                    },
-                    error: function(err) {
-                        console.error("Gagal mengambil data:", err);
-                        failureCallback(err);
-                    }
-                });
-            },
-            eventClick: function(info) {
-                alert('Kegiatan: ' + info.event.title + 
-                      '\nDeskripsi: ' + (info.event.extendedProps.description || '-'));
-            }
+            calendar.render();
         });
-        calendar.render();
-    });
-</script>
+    </script>
 </body>
 </html>

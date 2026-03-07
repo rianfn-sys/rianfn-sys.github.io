@@ -444,7 +444,7 @@ document.addEventListener('DOMContentLoaded', function() {
   const calendarEl = document.getElementById('calendar');
   
   // Ganti dengan URL CSV dari "Publish to Web" Anda
-  const sheetCsvUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTjMxT71Z3ygN3LuMjeanePHUpbrro9sQpR7EZcoA-YXyYn9Qlej9DOkG4lKOid8p3lewYqOSX-Ur-5/pubhtml?gid=1151856171&single=true'; 
+  const sheetCsvUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTjMxT71Z3ygN3LuMjeanePHUpbrro9sQpR7EZcoA-YXyYn9Qlej9DOkG4lKOid8p3lewYqOSX-Ur-5/pub?output=csv'; 
 
   // --- FUNGSI TAMBAHAN: MENGUBAH DD/MM/YYYY MENJADI YYYY-MM-DD ---
   function formatDateToISO(dateStr) {
@@ -476,7 +476,7 @@ document.addEventListener('DOMContentLoaded', function() {
       fetch(sheetCsvUrl)
         .then(response => response.text())
         .then(csvText => {
-          const rows = csvText.split('\n').map(row => row.split(';'));
+          const rows = csvText.split('\n').map(row => row.split(','));
           rows.shift(); // Hapus header baris pertama
 
           const events = rows.map(cols => {

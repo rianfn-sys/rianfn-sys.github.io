@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <title>Kalender Booking Aula Kiskendo</title>
+    <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.js"></script>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; }
+        #calendar { max-width: 900px; margin: 0 auto; }
+    </style>
+</head>
+<body>
+    <h2 style="text-align: center;">Jadwal Penggunaan Aula Kiskendo</h2>
+    <div id="calendar"></div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const calendarEl = document.getElementById('calendar');
+            const sheetCsvUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTjMxT71Z3ygN3LuMjeanePHUpbrro9sQpR7EZcoA-YXyYn9Qlej9DOkG4lKOid8p3lewYqOSX-Ur-5/pub?gid=1151856171&single=true&output=csv';
+            const calendar = new FullCalendar.Calendar(calendarEl, {
+                initialView: 'dayGridMonth',
+                locale: 'id',
+                events: function(info, successCallback, failureCallback) {
+                    fetch(sheetCsvUrl)
+                        .then(response => response.text())
+                        .then(csvText => {
+                            const rows = csvText.split('\n').slice(1); // Lewati header
+                            const events = rows.map(row => {
+                                const cols = row.split(',');
+                                // Berdasarkan kolom di file kamu:
+                                // Index 5: Nama Kegiatan, Index 7: Tanggal, Index 8: Jam Mulai
+                                if (cols[7]) {
+                                    return {
+                                        title: cols[5], // Nama Kegiatan
+                                        start: cols[7] + 'T' + cols[8], // Tanggal + Jam Mulai
+                                        description: cols[6] // Deskripsi
+                                    };
+                                }
+                            }).filter(e => e !== undefined);
+                            successCallback(events);
+                        });
+                },
+                eventClick: function(info) {
+                    alert('Kegiatan: ' + info.event.title + '\nDeskripsi: ' + info.event.extendedProps.description);
+                }
+            });
+            calendar.render();
+        });
+    </script>
+</body>
+</html>
